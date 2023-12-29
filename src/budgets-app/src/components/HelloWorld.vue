@@ -1,6 +1,11 @@
 <template>
     <h1>{{ msg }}</h1>
-    <div>{{budgets}}</div>
+  <ul>
+    <li v-for="budget in budgets" :key="budget.budgetID">
+      {{ budget.budgetName }}
+    </li>
+  </ul>
+  <h1>{{budget.budgetName}}</h1>
 </template>
 
 <script>
@@ -9,7 +14,8 @@ export default {
   data() {
     return {
       msg: '',
-      budgets: []
+      budgets: [],
+      budget: []
     }
   },
   mounted() {
@@ -19,9 +25,13 @@ export default {
           this.msg = data;
         });
     fetch("/api/budgets")
-        .then((response) => {
-          this.budgets = response;
+        .then((response) => response.json()).then((data) => {
+          this.budgets = data;
         })
+    fetch("/api/budget?id=1")
+        .then((response) => response.json()).then((data) => {
+        this.budget = data;
+    })
   }
 }
 </script>

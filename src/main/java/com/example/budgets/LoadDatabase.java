@@ -18,6 +18,12 @@ class LoadDatabase {
 
         return args -> {
             log.info("Preloading " + repository.save(new Budget("December")));
+            log.info("Preloading " + repository.save(new Budget("January")));
+            log.info("Preloading " + repository.save(new Budget("March")));
+            Iterable<Budget> budgets = repository.findAll();
+            budgets.forEach((b) -> {
+                System.out.println(b.getBudgetName());
+            });
         };
     }
 }

@@ -3,6 +3,7 @@ package com.example.budgets;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -19,7 +20,12 @@ public class BudgetController {
 
     @GetMapping(value = "/budgets")
     public List<Budget> getBudgets() {
-        return List.of();
+        return BudgetService.getBudgets();
+    }
+
+    @GetMapping(value = "/budget")
+    public Optional<Budget> getBudgetByID(@RequestParam(name = "id") Long ID) {
+        return BudgetService.getBudgetByID(ID);
     }
 
     @PostMapping
