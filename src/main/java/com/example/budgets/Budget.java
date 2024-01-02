@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
 
 @Entity
 class Budget {
@@ -14,12 +14,12 @@ class Budget {
     private String budgetName;
 
     @ElementCollection
-    private ArrayList<String> budgetCategories;
+    private List<String> budgetCategories;
 
     @ElementCollection
-    private ArrayList<String> budgetTransactions;
+    private List<String> budgetTransactions;
 
-    public Budget(String budgetName, ArrayList<String> budgetCategories, ArrayList<String> budgetTransactions) {
+    public Budget(String budgetName, List<String> budgetCategories, List<String> budgetTransactions) {
         this.budgetName = budgetName;
         this.budgetCategories = budgetCategories;
         this.budgetTransactions = budgetTransactions;
@@ -49,19 +49,19 @@ class Budget {
         this.budgetName = budgetName;
     }
 
-    public ArrayList<String> getBudgetCategories() {
+    public List<String> getBudgetCategories() {
         return budgetCategories;
     }
 
-    public void setBudgetCategories(ArrayList<String> budgetCategories) {
+    public void setBudgetCategories(List<String> budgetCategories) {
         this.budgetCategories = budgetCategories;
     }
 
-    public ArrayList<String> getBudgetTransactions() {
+    public List<String> getBudgetTransactions() {
         return budgetTransactions;
     }
 
-    public void setBudgetTransactions(ArrayList<String> budgetTransactions) {
+    public void setBudgetTransactions(List<String> budgetTransactions) {
         this.budgetTransactions = budgetTransactions;
     }
 

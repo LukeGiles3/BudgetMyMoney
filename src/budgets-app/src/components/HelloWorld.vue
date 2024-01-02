@@ -1,11 +1,13 @@
 <template>
+  <div style="padding-left: 10px">
     <h1>{{ msg }}</h1>
-  <ul>
-    <li v-for="budget in budgets" :key="budget.budgetID">
-      {{ budget.budgetName }}
-    </li>
-  </ul>
-  <h1>{{budget.budgetName}}</h1>
+    <ul>
+      <li v-for="budget in budgets" :key="budget.budgetID">
+        {{ budget.budgetName }}
+      </li>
+    </ul>
+    <h1>{{budget.budgetName}}</h1>
+  </div>
 </template>
 
 <script>
