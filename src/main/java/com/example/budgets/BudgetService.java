@@ -8,23 +8,22 @@ import java.util.Optional;
 
 @Service
 public class BudgetService {
-
-    public static BudgetsRepository repo;
+    public static BudgetsRepository budgetRepo;
 
     @Autowired
     public BudgetService(BudgetsRepository repo) {
-        BudgetService.repo = repo;
+        BudgetService.budgetRepo = repo;
     }
 
     public static List<Budget> getBudgets() {
-        return repo.findAll();
+        return budgetRepo.findAll();
     }
 
     public static void createNewBudget(Budget budget) {
-        repo.save(budget);
+        budgetRepo.save(budget);
     }
 
     public static Optional<Budget> getBudgetByID(Long id) {
-        return repo.findById(id);
+        return budgetRepo.findById(id);
     }
 }

@@ -11,12 +11,15 @@ class Transaction {
 
     private float transactionAmount;
 
-    private String transactionCategory; //category name
+    private Long categoryID;
 
-    public Transaction(String transactionName, float transactionAmount, String transactionCategory) {
+    private Long budgetID;
+
+    public Transaction(String transactionName, float transactionAmount, Long categoryID, Long budgetID) {
         this.transactionName = transactionName;
         this.transactionAmount = transactionAmount;
-        this.transactionCategory = transactionCategory;
+        this.categoryID = categoryID;
+        this.budgetID = budgetID;
     }
 
     public Transaction() {
@@ -47,21 +50,19 @@ class Transaction {
         this.transactionAmount = transactionAmount;
     }
 
-    public String getTransactionCategory() {
-        return transactionCategory;
+    public Long getCategoryID() {
+        return categoryID;
     }
 
-    public void setTransactionCategory(String transactionCategory) {
-        this.transactionCategory = transactionCategory;
+    public void setCategoryID(Long categoryID) {
+        this.categoryID = categoryID;
     }
 
-    @Override
-    public String toString() {
-        return "Transaction{" +
-                "transactionID=" + transactionID +
-                ", transactionName='" + transactionName + '\'' +
-                ", transactionAmount=" + transactionAmount +
-                ", transactionCategory='" + transactionCategory + '\'' +
-                '}';
+    public Long getBudgetID() {
+        return budgetID;
+    }
+
+    public void setBudgetID(Long budgetID) {
+        this.budgetID = budgetID;
     }
 }

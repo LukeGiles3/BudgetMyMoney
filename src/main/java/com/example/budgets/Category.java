@@ -1,16 +1,28 @@
 package com.example.budgets;
 
+
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+
+import java.util.List;
+
+@Entity
 public class Category {
-    private Long categoryID;
-
+    private @Id @GeneratedValue Long categoryID;
     private String categoryName;
-
     private float categoryAmount;
+    private Long budgetID;
 
-    public Category(Long categoryID, String categoryName, float categoryAmount) {
-        this.categoryID = categoryID;
+    public Category(String categoryName, float categoryAmount, Long budgetID) {
         this.categoryName = categoryName;
         this.categoryAmount = categoryAmount;
+        this.budgetID = budgetID;
+    }
+
+    public Category() {
+
     }
 
     public Long getCategoryID() {
@@ -35,6 +47,14 @@ public class Category {
 
     public void setCategoryAmount(float categoryAmount) {
         this.categoryAmount = categoryAmount;
+    }
+
+    public Long getBudgetID() {
+        return budgetID;
+    }
+
+    public void setBudgetID(Long budgetID) {
+        this.budgetID = budgetID;
     }
 
     @Override
