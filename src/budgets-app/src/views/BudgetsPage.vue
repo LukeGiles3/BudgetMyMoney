@@ -1,6 +1,9 @@
 <template>
   <div style="display: flex; flex-direction: column; height: 100%; width: 150vh; flex: 1">
     <HeaderBar/>
+    <div>
+      <h1>Budget - </h1>
+    </div>
     <div class="budgetAmounts">
       <div class="budgetAmountsButtons">Planned</div>
       <div class="budgetAmountsButtons">Spent</div>
@@ -19,12 +22,17 @@
       <input v-model="editCategoryAmount" placeholder="Category Amount">
       <button @click="editCategory">Submit</button>
     </div>
+    <div class="budgetHeader">
+      <p>Name</p>
+      <p>Amount</p>
+    </div>
     <div class="categoryItems" v-for="(category, index) in categories" :key="index">
-      <p>{{ category.categoryName }}</p>
-      <p>{{ category.categoryAmount }} <span @click="toggleEditCategory(category.categoryID)"><i
-          class="fa-solid fa-pencil"></i></span> <span class="editSaveIcons"
-                                                       @click="deleteCategory(category.categoryID)"><i
-          class="fa-solid fa-trash"></i></span></p>
+      <p>
+        <span class="editSaveIcons" @click="toggleEditCategory(category.categoryID)"><i class="fa-solid fa-pencil"></i></span>
+        <span class="editSaveIcons" @click="deleteCategory(category.categoryID)"><i class="fa-solid fa-trash"></i></span>
+        {{ category.categoryName }}
+      </p>
+      <p>{{ category.categoryAmount }}</p>
     </div>
   </div>
 </template>
@@ -100,9 +108,17 @@
 }
 
 .editSaveIcons {
+  padding: 5px;
   &:hover {
     cursor: pointer;
   }
+}
+.budgetHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  border-bottom: 4px solid whitesmoke;
+  margin-bottom: 5px;
 }
 </style>
 
@@ -119,7 +135,8 @@ export default {
       categories: [],
       editCategoryName: '',
       editCategoryAmount: '',
-      categoryIDToEdit: null
+      categoryIDToEdit: null,
+      categoryBeingEdited: {}
     };
   },
   components: {
@@ -129,9 +146,26 @@ export default {
     toggleNewCategory() {
       this.showNewCategory = !this.showNewCategory;
     },
-    toggleEditCategory(categoryID) {
-      this.showEditCategory = !this.showEditCategory;
-      this.categoryIDToEdit = categoryID;
+    async toggleEditCategory(categoryID) {
+      try {
+        const response = await fetch(`/api/category?id=${categoryID}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        if (!response.ok) {
+          throw new Error(`Error fetching category: ${response.statusText}`);
+        }
+        const data = await response.json();
+        this.categoryBeingEdited = data;
+        this.editCategoryName = this.categoryBeingEdited.categoryName;
+        this.editCategoryAmount = this.categoryBeingEdited.categoryAmount;
+        this.showEditCategory = !this.showEditCategory;
+        this.categoryIDToEdit = categoryID;
+      } catch (error) {
+        console.error('Toggle edit category error:', error);
+      }
     },
     async saveCategory() {
       if (this.newCategoryName && this.newCategoryAmount) {
