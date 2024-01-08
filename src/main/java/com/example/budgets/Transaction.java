@@ -13,13 +13,10 @@ class Transaction {
 
     private Long categoryID;
 
-    private Long budgetID;
-
-    public Transaction(String transactionName, float transactionAmount, Long categoryID, Long budgetID) {
+    public Transaction(String transactionName, float transactionAmount, Long categoryID) {
         this.transactionName = transactionName;
         this.transactionAmount = transactionAmount;
         this.categoryID = categoryID;
-        this.budgetID = budgetID;
     }
 
     public Transaction() {
@@ -56,13 +53,5 @@ class Transaction {
 
     public void setCategoryID(Long categoryID) {
         this.categoryID = categoryID;
-    }
-
-    public Long getBudgetID() {
-        return budgetID;
-    }
-
-    public void setBudgetID(Long budgetID) {
-        this.budgetID = budgetID;
     }
 }

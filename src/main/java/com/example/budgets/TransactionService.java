@@ -22,12 +22,11 @@ public class TransactionService {
 
     public static void createNewTransaction(Transaction transaction) { transactionRepo.save(transaction); }
 
-    public static void editTransaction(Long id, String name, float amount, Long budgetID, Long categoryID) {
+    public static void editTransaction(Long id, String name, float amount, Long categoryID) {
         Optional<Transaction> transactionToUpdate = transactionRepo.findById(id);
         Transaction transaction = transactionToUpdate.get();
         transaction.setTransactionName(name);
         transaction.setTransactionAmount(amount);
-        transaction.setBudgetID(budgetID);
         transaction.setCategoryID(categoryID);
         transactionRepo.save(transaction);
     }

@@ -13,12 +13,13 @@ public class Category {
     private @Id @GeneratedValue Long categoryID;
     private String categoryName;
     private float categoryAmount;
-    private Long budgetID;
+    @ElementCollection
+    private List<Long> transactionIDs;
 
-    public Category(String categoryName, float categoryAmount, Long budgetID) {
+    public Category(String categoryName, float categoryAmount, List<Long> transactionIDs) {
         this.categoryName = categoryName;
         this.categoryAmount = categoryAmount;
-        this.budgetID = budgetID;
+        this.transactionIDs = transactionIDs;
     }
 
     public Category() {
@@ -49,20 +50,11 @@ public class Category {
         this.categoryAmount = categoryAmount;
     }
 
-    public Long getBudgetID() {
-        return budgetID;
+    public List<Long> getTransactionIDs() {
+        return transactionIDs;
     }
 
-    public void setBudgetID(Long budgetID) {
-        this.budgetID = budgetID;
-    }
-
-    @Override
-    public String toString() {
-        return "Category{" +
-                "categoryID=" + categoryID +
-                ", categoryName='" + categoryName + '\'' +
-                ", categoryAmount=" + categoryAmount +
-                '}';
+    public void setTransactionIDs(List<Long> transactionIDs) {
+        this.transactionIDs = transactionIDs;
     }
 }

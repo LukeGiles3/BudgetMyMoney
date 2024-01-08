@@ -4,54 +4,76 @@
     <div>
       <h1>Transactions</h1>
     </div>
+    <div class="search-container">
+      <div class="input-wrapper">
+        <input v-model="searchTerm" id="searchTransactions" class="search-input" placeholder="Search by name..."/>
+        <button @click="searchTransactions(searchTerm)"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <button @click="clearSearch">Clear</button>
+      </div>
+    </div>
     <button class="fab-button" @click="showNewModalMethod"><span class="plus-sign">+</span></button>
     <div v-if="showNewModal" class="modal-container">
       <div class="modal-content">
-        <h2>Add Transaction</h2>
-        <label for="transactionName">Transaction Name:</label>
-        <input v-model="newTransactionName" id="transactionName" type="text" />
-        <label for="transactionAmount">Transaction Amount:</label>
-        <input v-model="newTransactionAmount" id="transactionAmount" type="number" />
-        <label for="categoryID">Category ID:</label>
-        <input v-model="newCategoryID" id="categoryID" type="text" />
-        <label for="budgetID">Budget ID:</label>
-        <input v-model="newBudgetID" id="budgetID" type="text" />
-        <button @click="submitTransaction">Submit</button>
-        <button @click="closeNewModalMethod">Close</button>
+        <h2 style="padding: 5px">Add Transaction</h2>
+        <label style="padding: 5px" for="transactionName">Transaction Name:</label>
+        <input style="padding: 5px" v-model="newTransactionName" id="transactionName" type="text" />
+        <label style="padding: 5px" for="transactionAmount">Transaction Amount:</label>
+        <input style="padding: 5px" v-model="newTransactionAmount" id="transactionAmount" type="number" />
+        <label style="padding: 5px" for="categoryID">Category:</label>
+        <select style="padding: 5px; margin-bottom: 10px" v-model="newCategoryID">
+          <option v-for="(category, index) in categories" :key="index" :value="category.categoryID">{{category.categoryName}}</option>
+        </select>
+        <div class="modal-buttons">
+          <button style="padding: 5px; margin: 5px;" @click="submitTransaction">Submit</button>
+          <button style="padding: 5px; margin: 5px;" @click="closeNewModalMethod">Close</button>
+        </div>
       </div>
     </div>
     <div v-if="showEditModal" class="modal-container">
       <div class="modal-content">
-        <h2>Add Transaction</h2>
-        <label for="transactionName">Transaction Name:</label>
-        <input v-model="editTransactionName" id="transactionName" type="text" />
-        <label for="transactionAmount">Transaction Amount:</label>
-        <input v-model="editTransactionAmount" id="transactionAmount" type="number" />
-        <label for="categoryID">Category ID:</label>
-        <input v-model="editTransactionCategoryID" id="categoryID" type="text" />
-        <label for="budgetID">Budget ID:</label>
-        <input v-model="editTransactionBudgetID" id="budgetID" type="text" />
-        <button @click="editTransaction">Submit</button>
-        <button @click="closeEditModalMethod">Close</button>
+        <h2 style="padding: 5px">Edit Transaction</h2>
+        <label style="padding: 5px" for="transactionName">Transaction Name:</label>
+        <input style="padding: 5px" v-model="editTransactionName" id="transactionName" type="text" />
+        <label style="padding: 5px" for="transactionAmount">Transaction Amount:</label>
+        <input style="padding: 5px" v-model="editTransactionAmount" id="transactionAmount" type="number" />
+        <label style="padding: 5px" for="categoryID">Category:</label>
+        <select style="padding: 5px; margin-bottom: 10px" v-model="editTransactionCategoryID">
+          <option v-for="(category, index) in categories" :key="index" :value="category.categoryID">{{category.categoryName}}</option>
+        </select>
+        <div class="modal-buttons">
+        <button style="padding: 5px; margin: 5px;" @click="editTransaction">Submit</button>
+        <button style="padding: 5px; margin: 5px;" @click="closeEditModalMethod">Close</button>
+        </div>
       </div>
     </div>
     <div class="transactionHeader">
-      <p>Name</p>
-      <p>Budget</p>
+      <p style="width: 550px">Name</p>
       <p>Category</p>
       <p>Amount</p>
     </div>
-    <div class="transactionItems" v-for="(transaction, index) in transactions" :key="index">
-      <p>
-        <span class="editSaveIcons" @click="toggleEditTransaction(transaction.transactionID)"><i class="fa-solid fa-pencil"></i></span>
-        <span class="editSaveIcons" @click="deleteTransaction(transaction.transactionID)"><i class="fa-solid fa-trash"></i></span>
-        {{ transaction.transactionName }}
-      </p>
-      <p>{{ transaction.budgetID }}</p>
-      <p>{{ transaction.categoryID }}</p>
-      <p>{{ transaction.transactionAmount }}
-
-      </p>
+    <div v-if="noSearchTranCheck">
+      <div class="transactionItems" v-for="(transaction, index) in transactions" :key="index">
+        <p style="width: 500px">
+          <span class="editSaveIcons" @click="toggleEditTransaction(transaction.transactionID)"><i class="fa-solid fa-pencil"></i></span>
+          <span class="editSaveIcons" @click="deleteTransaction(transaction.transactionID)"><i class="fa-solid fa-trash"></i></span>
+          {{ transaction.transactionName }}
+        </p>
+        <p>{{ getCategoryName(transaction.categoryID) }}</p>
+        <p>{{ transaction.transactionAmount }}
+        </p>
+      </div>
+    </div>
+    <div v-if="searchTranCheck">
+      <div class="transactionItems" v-for="(transaction, index) in searchedTransactions" :key="index">
+        <p>
+          <span class="editSaveIcons" @click="toggleEditTransaction(transaction.transactionID)"><i class="fa-solid fa-pencil"></i></span>
+          <span class="editSaveIcons" @click="deleteTransaction(transaction.transactionID)"><i class="fa-solid fa-trash"></i></span>
+          {{ transaction.transactionName }}
+        </p>
+        <p>{{ getCategoryName(transaction.categoryID) }}</p>
+        <p>{{ transaction.transactionAmount }}
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -64,16 +86,20 @@ export default {
       showEditModal: false,
       showNewModal: false,
       transactions: [],
+      categories: [],
+      categoryName: '',
       newTransactionName: '',
       newTransactionAmount: '',
-      newBudgetID: '',
       newCategoryID: '',
       transactionIDToEdit: null,
       transactionBeingEdited: {},
       editTransactionName: '',
       editTransactionAmount: '',
-      editTransactionBudgetID: '',
-      editTransactionCategoryID: ''
+      editTransactionCategoryID: '',
+      searchTerm: '',
+      searchedTransactions: [],
+      searchTranCheck: false,
+      noSearchTranCheck: true
     }
 },
   components: {
@@ -81,13 +107,11 @@ export default {
   },
   methods: {
     showNewModalMethod() {
+      this.getCategories()
       this.showNewModal = true
     },
     closeNewModalMethod() {
       this.showNewModal = false
-    },
-    showEditModalMethod() {
-      this.showEditModal = true
     },
     closeEditModalMethod() {
       this.showEditModal = false
@@ -107,7 +131,6 @@ export default {
         this.transactionBeingEdited = data;
         this.editTransactionName = this.transactionBeingEdited.transactionName;
         this.editTransactionAmount = this.transactionBeingEdited.transactionAmount;
-        this.editTransactionBudgetID = this.transactionBeingEdited.budgetID;
         this.editTransactionCategoryID = this.transactionBeingEdited.categoryID;
         this.showEditModal = !this.showEditModal;
         this.transactionIDToEdit = transactionID;
@@ -122,7 +145,7 @@ export default {
       })
     },
     async submitTransaction() {
-      if (this.newTransactionName && this.newTransactionAmount) {
+      if (this.newTransactionName && this.newTransactionAmount && this.newCategoryID) {
         const response = await fetch('/api/createNewTransaction/save', {
           method: 'POST',
           headers: {
@@ -131,7 +154,6 @@ export default {
           body: JSON.stringify({
             transactionName: this.newTransactionName,
             transactionAmount: this.newTransactionAmount,
-            budgetID: this.newBudgetID,
             categoryID: this.newCategoryID
           }),
         });
@@ -142,21 +164,20 @@ export default {
           });
           this.newTransactionName = '';
           this.newTransactionAmount = '';
-          this.newBudgetID = '';
           this.newCategoryID = '';
           this.showNewModal = false;
           this.getTransactions()
         }
       } else {
         this.$toast.open({
-          message: 'You must input the transaction name and amount!',
+          message: 'You must input all the information!',
           type: 'error',
         });
       }
     },
     async editTransaction() {
       if (this.editTransactionName && this.editTransactionAmount) {
-        const response = await fetch(`/api/editTransaction?id=${this.transactionIDToEdit}&transactionName=${this.editTransactionName}&transactionAmount=${this.editTransactionAmount}&budgetID=${this.editTransactionBudgetID}&categoryID=${this.editTransactionCategoryID}`, {
+        const response = await fetch(`/api/editTransaction?id=${this.transactionIDToEdit}&transactionName=${this.editTransactionName}&transactionAmount=${this.editTransactionAmount}&categoryID=${this.editTransactionCategoryID}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -164,7 +185,6 @@ export default {
           body: JSON.stringify({
             transactionName: this.editTransactionName,
             transactionAmount: this.editTransactionAmount,
-            budgetID: this.editTransactionBudgetID,
             categoryID: this.editTransactionCategoryID
           }),
         });
@@ -175,7 +195,6 @@ export default {
           });
           this.editTransactionName = '';
           this.editTransactionAmount = '';
-          this.editTransactionBudgetID = '';
           this.editTransactionCategoryID = '';
           this.showEditModal = false;
           this.getTransactions()
@@ -201,10 +220,32 @@ export default {
         });
         this.getTransactions()
       }
+    },
+    getCategories() {
+      fetch('/api/allCategories')
+          .then((response) => response.json()).then((data) => {
+        this.categories = data;
+      })
+    },
+    getCategoryName(categoryID) {
+      const category = this.categories.find(cat => cat.categoryID === categoryID)
+      return category ? category.categoryName : '???'
+    },
+    searchTransactions(searchTerm) {
+      this.searchTranCheck = !this.searchTranCheck
+      this.noSearchTranCheck = !this.searchTranCheck
+      this.searchTerm = searchTerm
+      this.searchedTransactions = this.transactions.filter(transaction => transaction.transactionName.toLowerCase().includes(searchTerm))
+    },
+    clearSearch() {
+      this.searchTranCheck = !this.searchTranCheck
+      this.noSearchTranCheck = !this.searchTranCheck
+      this.searchTerm = ''
     }
   },
   mounted() {
     this.getTransactions();
+    this.getCategories();
   }
 }
 
@@ -246,7 +287,7 @@ export default {
 }
 .modal-content {
   background-color: white;
-  padding: 20px;
+  padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -291,6 +332,24 @@ button:hover {
   &:hover {
     cursor: pointer;
   }
+}
+.modal-buttons {
+  display: flex;
+  flex-direction: row;
+}
+.search-container {
+  display: flex;
+  align-items: center;
+}
+.input-wrapper {
+  position: relative;
+}
+.search-input {
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 15px;
+  width: 300px;
 }
 </style>
 

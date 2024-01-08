@@ -2,37 +2,51 @@
   <div style="display: flex; flex-direction: column; height: 100%; width: 150vh; flex: 1">
     <HeaderBar/>
     <div>
-      <h1>Budget - </h1>
+      <h1>Budget</h1>
     </div>
     <div class="budgetAmounts">
-      <div class="budgetAmountsButtons">Planned</div>
-      <div class="budgetAmountsButtons">Spent</div>
-      <div class="budgetAmountsButtons">Remaining</div>
+      <div class="budgetAmountsButtons" :class= "{'selected' : showPlanned}" @click="togglePlanned">Planned</div>
+      <div class="budgetAmountsButtons" :class= "{'selected' : showSpent}" @click="toggleSpent">Spent</div>
+      <div class="budgetAmountsButtons" :class= "{'selected' : showRemaining}" @click="toggleRemaining">Remaining</div>
     </div>
-    <div class="addNewCategory" @click="toggleNewCategory">
+    <div v-if="showPlanned" class="addNewCategory" @click="toggleNewCategory">
       <span style="background-color: #4caf50; padding: 5px;">New category +</span>
     </div>
     <div v-if="showNewCategory" class="newCategoryForm">
       <input v-model="newCategoryName" placeholder="Category Name">
-      <input v-model="newCategoryAmount" placeholder="Category Amount">
+      <input v-model="newCategoryAmount" placeholder="Category Amount" type="number">
       <button @click="saveCategory">Submit</button>
     </div>
     <div v-if="showEditCategory" class="newCategoryForm">
       <input v-model="editCategoryName" placeholder="Category Name">
-      <input v-model="editCategoryAmount" placeholder="Category Amount">
+      <input v-model="editCategoryAmount" placeholder="Category Amount" type="number">
       <button @click="editCategory">Submit</button>
     </div>
     <div class="budgetHeader">
       <p>Name</p>
       <p>Amount</p>
     </div>
-    <div class="categoryItems" v-for="(category, index) in categories" :key="index">
-      <p>
-        <span class="editSaveIcons" @click="toggleEditCategory(category.categoryID)"><i class="fa-solid fa-pencil"></i></span>
-        <span class="editSaveIcons" @click="deleteCategory(category.categoryID)"><i class="fa-solid fa-trash"></i></span>
-        {{ category.categoryName }}
-      </p>
-      <p>{{ category.categoryAmount }}</p>
+    <div v-if="showPlanned">
+      <div class="categoryItems" v-for="(category, index) in categories" :key="index">
+        <p>
+          <span class="editSaveIcons" @click="toggleEditCategory(category.categoryID)"><i class="fa-solid fa-pencil"></i></span>
+          <span class="editSaveIcons" @click="deleteCategory(category.categoryID)"><i class="fa-solid fa-trash"></i></span>
+          {{ category.categoryName }}
+        </p>
+        <p>{{ category.categoryAmount }}</p>
+      </div>
+    </div>
+    <div v-if="showSpent">
+      <div class="categoryItems" v-for="(category, index) in categories" :key="index">
+        <p>{{ category.categoryName }}</p>
+        <p>{{ spentAmount(category.categoryID) }}</p>
+      </div>
+    </div>
+    <div v-if="showRemaining">
+      <div class="categoryItems" v-for="(category, index) in categories" :key="index">
+        <p>{{ category.categoryName }}</p>
+        <p>{{ remainingAmount(category.categoryID) }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -61,6 +75,10 @@
     background-color: chocolate;
     cursor: pointer;
   }
+}
+
+.selected {
+  background-color: chocolate;
 }
 
 .addNewCategory {
@@ -130,9 +148,13 @@ export default {
     return {
       showNewCategory: false,
       showEditCategory: false,
+      showPlanned: true,
+      showSpent: false,
+      showRemaining: false,
       newCategoryName: '',
       newCategoryAmount: '',
       categories: [],
+      transactions: [],
       editCategoryName: '',
       editCategoryAmount: '',
       categoryIDToEdit: null,
@@ -145,6 +167,21 @@ export default {
   methods: {
     toggleNewCategory() {
       this.showNewCategory = !this.showNewCategory;
+    },
+    togglePlanned() {
+      this.showPlanned = !this.showPlanned;
+      this.showSpent = false;
+      this.showRemaining = false
+    },
+    toggleSpent() {
+      this.showSpent = !this.showSpent;
+      this.showRemaining = false;
+      this.showPlanned = false;
+    },
+    toggleRemaining() {
+      this.showRemaining = !this.showRemaining;
+      this.showSpent = false;
+      this.showPlanned = false;
     },
     async toggleEditCategory(categoryID) {
       try {
@@ -245,10 +282,33 @@ export default {
           .then((response) => response.json()).then((data) => {
         this.categories = data;
       })
+    },
+    getTransactions() {
+      fetch('/api/allTransactions')
+          .then((response) => response.json()).then((data) => {
+        this.transactions = data;
+      })
+    },
+    spentAmount(categoryID) {
+      let transactionToCalculate = [];
+      for (let i = 0; i < this.transactions.length; i++) {
+        if (this.transactions[i].categoryID === categoryID) {
+          transactionToCalculate.push(this.transactions[i].transactionAmount)
+        }
+      }
+      return transactionToCalculate.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue
+      },0);
+    },
+    remainingAmount(categoryID) {
+      const spentAmount = this.spentAmount(categoryID);
+      const category = this.categories.find(cat => cat.categoryID === categoryID)
+      return category ? category.categoryAmount - spentAmount : 0;
     }
   },
   mounted() {
     this.getCategories()
+    this.getTransactions()
   }
 };
 </script>

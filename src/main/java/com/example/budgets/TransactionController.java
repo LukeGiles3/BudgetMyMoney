@@ -24,8 +24,8 @@ public class TransactionController {
     }
 
     @PostMapping(value = "/editTransaction")
-    public void editTransaction(@RequestParam(name = "id") Long ID, @RequestParam(name = "transactionName") String name, @RequestParam(name = "transactionAmount") float amount, @RequestParam(name = "budgetID") Long budgetID, @RequestParam(name = "categoryID") Long categoryID) {
-        TransactionService.editTransaction(ID, name, amount, budgetID, categoryID);
+    public void editTransaction(@RequestParam(name = "id") Long ID, @RequestParam(name = "transactionName") String name, @RequestParam(name = "transactionAmount") float amount, @RequestParam(name = "categoryID") Long categoryID) {
+        TransactionService.editTransaction(ID, name, amount, categoryID);
     }
 
     @GetMapping(value = "/transaction")
