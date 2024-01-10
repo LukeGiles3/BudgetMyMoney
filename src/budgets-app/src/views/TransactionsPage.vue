@@ -11,6 +11,11 @@
         <button @click="clearSearch">Clear</button>
       </div>
     </div>
+    <div>
+      <div class="addNewCategory" style="margin-top: 15px" @click="deleteAllTransactions">
+        <span style="background-color: #4caf50; padding: 5px;">Clear transactions</span>
+      </div>
+    </div>
     <button class="fab-button" @click="showNewModalMethod"><span class="plus-sign">+</span></button>
     <div v-if="showNewModal" class="modal-container">
       <div class="modal-content">
@@ -241,6 +246,21 @@ export default {
       this.searchTranCheck = !this.searchTranCheck
       this.noSearchTranCheck = !this.searchTranCheck
       this.searchTerm = ''
+    },
+    async deleteAllTransactions() {
+      const response = await fetch(`/api/deleteAllTransactions`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      if (response.ok) {
+        this.$toast.open({
+          message: 'All transactions deleted!',
+          type: 'success',
+        });
+        this.getTransactions()
+      }
     }
   },
   mounted() {

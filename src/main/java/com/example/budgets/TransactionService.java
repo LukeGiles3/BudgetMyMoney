@@ -38,4 +38,6 @@ public class TransactionService {
     public static void deleteTransaction(Long id) {
         transactionRepo.deleteById(id);
     }
+
+    public static void deleteAllTransactions() { transactionRepo.deleteAll(); }
 }

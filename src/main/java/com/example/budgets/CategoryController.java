@@ -37,4 +37,7 @@ public class CategoryController {
     public List<Category> getAllCategories() {
         return CategoryService.getAllCategories();
     }
+
+    @DeleteMapping(value = "/deleteAllCategories")
+    public void deleteAllCategories() { CategoryService.deleteAllCategories(); }
 }

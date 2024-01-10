@@ -34,4 +34,6 @@ public class CategoryService {
     public static void deleteCategory(Long id) {
         categoryRepo.deleteById(id);
     }
+
+    public static void deleteAllCategories() { categoryRepo.deleteAll(); }
 }

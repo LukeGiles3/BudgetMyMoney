@@ -38,4 +38,7 @@ public class TransactionController {
         TransactionService.deleteTransaction(id);
     }
 
+    @DeleteMapping(value = "/deleteAllTransactions")
+    public void deleteAllTransactions() { TransactionService.deleteAllTransactions(); }
+
 }

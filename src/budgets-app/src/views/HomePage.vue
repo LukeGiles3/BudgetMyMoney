@@ -4,7 +4,7 @@
     <div class="center">
       <h1>
         Welcome to BudgetMyMoney. Use the Budget tab to create categories of things you spend money on. Add transactions through the Transactions
-        Tab and assign them to the categories you created. View how much you spent over time through the Reports tab.
+        Tab and assign them to the categories you created. View how much you spent over time by generating reports on the two different pages.
       </h1>
     </div>
   </div>

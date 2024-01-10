@@ -13,13 +13,10 @@ public class Category {
     private @Id @GeneratedValue Long categoryID;
     private String categoryName;
     private float categoryAmount;
-    @ElementCollection
-    private List<Long> transactionIDs;
 
-    public Category(String categoryName, float categoryAmount, List<Long> transactionIDs) {
+    public Category(String categoryName, float categoryAmount) {
         this.categoryName = categoryName;
         this.categoryAmount = categoryAmount;
-        this.transactionIDs = transactionIDs;
     }
 
     public Category() {
@@ -48,13 +45,5 @@ public class Category {
 
     public void setCategoryAmount(float categoryAmount) {
         this.categoryAmount = categoryAmount;
-    }
-
-    public List<Long> getTransactionIDs() {
-        return transactionIDs;
-    }
-
-    public void setTransactionIDs(List<Long> transactionIDs) {
-        this.transactionIDs = transactionIDs;
     }
 }

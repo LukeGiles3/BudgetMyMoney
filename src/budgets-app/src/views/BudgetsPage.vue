@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex; flex-direction: column; height: 100%; width: 150vh; flex: 1">
+  <div id="mainBudget" style="display: flex; flex-direction: column; height: 100%; width: 150vh; flex: 1">
     <HeaderBar/>
     <div>
       <h1>Budget</h1>
@@ -9,8 +9,13 @@
       <div class="budgetAmountsButtons" :class= "{'selected' : showSpent}" @click="toggleSpent">Spent</div>
       <div class="budgetAmountsButtons" :class= "{'selected' : showRemaining}" @click="toggleRemaining">Remaining</div>
     </div>
-    <div v-if="showPlanned" class="addNewCategory" @click="toggleNewCategory">
-      <span style="background-color: #4caf50; padding: 5px;">New category +</span>
+    <div style="display: flex;" v-if="showPlanned">
+      <div class="addNewCategory" @click="toggleNewCategory">
+        <span style="background-color: #4caf50; padding: 5px;">New category +</span>
+      </div>
+      <div class="addNewCategory" @click="deleteAllCategories">
+        <span style="background-color: #4caf50; padding: 5px;">Clear categories</span>
+      </div>
     </div>
     <div v-if="showNewCategory" class="newCategoryForm">
       <input v-model="newCategoryName" placeholder="Category Name">
@@ -86,7 +91,7 @@
   font-size: 15px;
   color: black;
   margin-bottom: 10px;
-
+  margin-right: 10px;
   &:hover {
     cursor: pointer;
   }
@@ -304,6 +309,21 @@ export default {
       const spentAmount = this.spentAmount(categoryID);
       const category = this.categories.find(cat => cat.categoryID === categoryID)
       return category ? category.categoryAmount - spentAmount : 0;
+    },
+    async deleteAllCategories() {
+      const response = await fetch(`/api/deleteAllCategories`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      if (response.ok) {
+        this.$toast.open({
+          message: 'All categories deleted!',
+          type: 'success',
+        });
+        this.getCategories()
+      }
     }
   },
   mounted() {

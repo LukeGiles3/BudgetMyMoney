@@ -9,7 +9,6 @@
     <SideMenuItem to="/">Home</SideMenuItem>
     <SideMenuItem to="/budgets">Budget</SideMenuItem>
     <SideMenuItem to="/transactions">Transactions</SideMenuItem>
-    <SideMenuItem to="/reports">Reports</SideMenuItem>
 
     <span
         class="collapse-icon"
