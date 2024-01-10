@@ -16,6 +16,9 @@
       <div class="addNewCategory" @click="deleteAllCategories">
         <span style="background-color: #4caf50; padding: 5px;">Clear categories</span>
       </div>
+      <div class="addNewCategory" @click="generatePDF">
+        <span style="background-color: #4caf50; padding: 5px;">Export to PDF</span>
+      </div>
     </div>
     <div v-if="showNewCategory" class="newCategoryForm">
       <input v-model="newCategoryName" placeholder="Category Name">
@@ -147,6 +150,7 @@
 
 <script>
 import HeaderBar from '../components/HeaderBar.vue'
+import { PDFDocument, rgb } from "pdf-lib";
 
 export default {
   data() {
@@ -324,7 +328,29 @@ export default {
         });
         this.getCategories()
       }
-    }
+    },
+    async generatePDF() {
+      const pdfDoc = await PDFDocument.create();
+      const page = pdfDoc.addPage([600, 800]);
+      page.drawText('Budget Report', { x: 50, y: 750, fontColor: rgb(0, 0, 0), size: 20 });
+      page.drawText('Date: ' + new Date().toLocaleDateString(), {x: 50, y:730, fontColor: rgb(0, 0, 0), size: 20})
+      page.drawText('Category Name', { x: 50, y: 700, fontColor: rgb(0, 0, 0), size: 15 });
+      page.drawText('Category Amount', { x: 250, y: 700, fontColor: rgb(0, 0, 0), size: 15 });
+      const content = this.categories
+      content.forEach((entry, index) => {
+        page.drawText(entry.categoryName, { x: 50, y: 670 - index * 20, fontColor: rgb(0, 0, 0), size: 13 });
+        page.drawText(entry.categoryAmount.toString(), { x: 250, y: 670 - index * 20, fontColor: rgb(0, 0, 0), size: 13 });
+      });
+      const pdfBytes = await pdfDoc.save();
+      this.downloadPDF(pdfBytes);
+    },
+    downloadPDF(pdfBytes) {
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = 'budget_report.pdf';
+      link.click();
+    },
   },
   mounted() {
     this.getCategories()

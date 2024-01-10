@@ -8,7 +8,8 @@
       <div class="input-wrapper">
         <input v-model="searchTerm" id="searchTransactions" class="search-input" placeholder="Search by name..."/>
         <button @click="searchTransactions(searchTerm)"><i class="fa-solid fa-magnifying-glass"></i></button>
-        <button @click="clearSearch">Clear</button>
+        <button @click="clearSearch">Clear Search</button>
+        <button @click="generatePDF">Export to PDF</button>
       </div>
     </div>
     <div>
@@ -85,6 +86,7 @@
 
 <script>
 import HeaderBar from "@/components/HeaderBar.vue";
+import {PDFDocument, rgb} from "pdf-lib";
 export default {
   data() {
     return {
@@ -261,7 +263,32 @@ export default {
         });
         this.getTransactions()
       }
-    }
+    },
+    async generatePDF() {
+      const pdfDoc = await PDFDocument.create();
+      const page = pdfDoc.addPage([600, 800]);
+      page.drawText('Transaction Report', { x: 50, y: 750, color: rgb(0, 0, 0), size: 20 });
+      page.drawText('Date: ' + new Date().toLocaleDateString(), {x: 50, y:730, color: rgb(0, 0, 0), size: 20})
+      page.drawText('Transaction Name', { x: 50, y: 700, color: rgb(0, 0, 0), size: 15 });
+      page.drawText('Budget Category', { x: 250, y: 700, color: rgb(0, 0, 0), size: 15 });
+      page.drawText('Transaction Amount', { x: 450, y: 700, color: rgb(0, 0, 0), size: 15 });
+      const content = this.transactions
+      content.forEach((entry, index) => {
+        let name = this.getCategoryName(entry.categoryID)
+        page.drawText(entry.transactionName, { x: 50, y: 670 - index * 20, color: rgb(0, 0, 0), size: 13 });
+        page.drawText(name, { x: 250, y: 670 - index * 20, color: rgb(0, 0, 0), size: 13 });
+        page.drawText(entry.transactionAmount.toString(), { x: 450, y: 670 - index * 20, color: rgb(0, 0, 0), size: 13 });
+      });
+      const pdfBytes = await pdfDoc.save();
+      this.downloadPDF(pdfBytes);
+    },
+    downloadPDF(pdfBytes) {
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = 'budget_report.pdf';
+      link.click();
+    },
   },
   mounted() {
     this.getTransactions();
