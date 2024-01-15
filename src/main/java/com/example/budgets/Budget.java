@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-class Budget {
+public class Budget {
 
     private @Id @GeneratedValue Long budgetID;
 

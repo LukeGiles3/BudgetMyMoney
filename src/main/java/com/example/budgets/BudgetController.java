@@ -13,10 +13,6 @@ public class BudgetController {
     BudgetController(BudgetsRepository repo) {
         this.repo = repo;
     }
-    @GetMapping(value = "/test")
-    public String getTest() {
-        return "yup";
-    }
 
     @GetMapping(value = "/budgets")
     public List<Budget> getBudgets() {
