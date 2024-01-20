@@ -1,34 +1,41 @@
 <template>
-  <div class="sidebar" :style="{ width: sidebarWidth }">
+  <div class="sidebar">
     <h1>
-      <span v-if="collapsed">
-      </span>
-      <span v-else>Menu</span>
+      <span>Menu</span>
     </h1>
-
-    <SideMenuItem to="/">Home</SideMenuItem>
+    <SideMenuItem to="/home">Home</SideMenuItem>
     <SideMenuItem to="/budgets">Budget</SideMenuItem>
     <SideMenuItem to="/transactions">Transactions</SideMenuItem>
-
-    <span
-        class="collapse-icon"
-        :class="{ 'rotate-180': collapsed }"
-        @click="toggleSidebar"
-    >
-      <i class="fas fa-angle-double-left" />
-    </span>
+    <a class="link" @click="signOut">Sign Out</a>
   </div>
 </template>
 
 <script>
-import { collapsed, toggleSidebar, sidebarWidth } from './SideMenuState'
 import SideMenuItem from "@/components/SideBar/SideMenuItem.vue";
+import { getAuth, signOut } from 'firebase/auth'
 
 export default {
   props: {},
   components: {SideMenuItem },
+  methods: {
+    signOut() {
+      const auth = getAuth();
+      signOut(auth).then(() => {
+        this.$toast.open({
+          message: 'Sign out successful!',
+          type: 'success',
+        });
+        this.$router.push('/login')
+      }).catch((error) => {
+        this.$toast.open({
+          message: `Sign out error: ${error}`,
+          type: 'error',
+        });
+      });
+    }
+  },
   setup() {
-    return { collapsed, toggleSidebar, sidebarWidth }
+    return { }
   }
 }
 </script>
@@ -56,19 +63,36 @@ export default {
   height: 2.5em;
 }
 
-.collapse-icon {
-  position: absolute;
-  bottom: 0;
-  padding: 0.75em;
+.link {
+  display: flex;
+  align-items: center;
 
-  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  position: relative;
+  font-weight: 400;
+  user-select: none;
 
-  transition: 0.2s linear;
+  margin: 0.1em 0;
+  padding: 0.4em;
+  border-radius: 0.25em;
+  height: 1.5em;
+
+  color: black;
+  text-decoration: none;
 }
 
-.rotate-180 {
-  transform: rotate(180deg);
-  transition: 0.2s linear;
+.link:hover {
+  background-color: blueviolet;
+}
+
+.link.active {
+  background-color: greenyellow;
+}
+
+.link .icon {
+  flex-shrink: 0;
+  width: 25px;
+  margin-right: 10px;
 }
 </style>
 

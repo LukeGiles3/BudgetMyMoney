@@ -1,7 +1,7 @@
 <template>
-  <div  style="display: flex; justify-content: space-around; height: 100vh">
-    <SideMenu />
-    <div :style="{ 'margin-left': sidebarWidth}">
+  <div>
+    <HeaderBar />
+    <div>
       <router-view />
     </div>
   </div>
@@ -9,16 +9,14 @@
 </template>
 
 <script>
-import SideMenu from './components/SideBar/SideMenu.vue'
-import {sidebarWidth} from "@/components/SideBar/SideMenuState";
+import HeaderBar from "@/components/HeaderBar.vue";
 
 export default {
   name: 'App',
   components: {
-    SideMenu
+    HeaderBar
   },
   setup() {
-    return { sidebarWidth }
   }
 };
 </script>

@@ -1,93 +1,103 @@
 <template>
-  <div style="display: flex; flex-direction: column; height: 100%; width: 150vh; flex: 1; position: relative;">
-    <HeaderBar />
     <div>
-      <h1>Transactions</h1>
-    </div>
-    <div class="search-container">
-      <div class="input-wrapper">
-        <input v-model="searchTerm" id="searchTransactions" class="search-input" placeholder="Search by name..."/>
-        <button @click="searchTransactions(searchTerm)"><i class="fa-solid fa-magnifying-glass"></i></button>
-        <button @click="clearSearch">Clear Search</button>
-        <button @click="generatePDF">Export to PDF</button>
-      </div>
-    </div>
-    <div>
-      <div class="addNewCategory" style="margin-top: 15px" @click="deleteAllTransactions">
-        <span style="background-color: #4caf50; padding: 5px;">Clear transactions</span>
-      </div>
-    </div>
-    <button class="fab-button" @click="showNewModalMethod"><span class="plus-sign">+</span></button>
-    <div v-if="showNewModal" class="modal-container">
-      <div class="modal-content">
-        <h2 style="padding: 5px">Add Transaction</h2>
-        <label style="padding: 5px" for="transactionName">Transaction Name:</label>
-        <input style="padding: 5px" v-model="newTransactionName" id="transactionName" type="text" />
-        <label style="padding: 5px" for="transactionAmount">Transaction Amount:</label>
-        <input style="padding: 5px" v-model="newTransactionAmount" id="transactionAmount" type="number" />
-        <label style="padding: 5px" for="categoryID">Category:</label>
-        <select style="padding: 5px; margin-bottom: 10px" v-model="newCategoryID">
-          <option v-for="(category, index) in categories" :key="index" :value="category.categoryID">{{category.categoryName}}</option>
-        </select>
-        <div class="modal-buttons">
-          <button style="padding: 5px; margin: 5px;" @click="submitTransaction">Submit</button>
-          <button style="padding: 5px; margin: 5px;" @click="closeNewModalMethod">Close</button>
+      <SideMenu />
+      <div style="margin-right: 5vh; margin-left: 30vh">
+        <router-view />
+        <div>
+          <h1>Transactions</h1>
+        </div>
+        <div class="search-container">
+          <div class="input-wrapper">
+            <input v-model="searchTerm" id="searchTransactions" class="search-input" placeholder="Search by name..."/>
+            <button @click="searchTransactions(searchTerm)"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button @click="clearSearch">Clear Search</button>
+            <button @click="generatePDF">Export to PDF</button>
+          </div>
+        </div>
+        <div>
+          <div class="deleteAllTransactions" style="margin-top: 15px" @click="deleteAllTransactions">
+            <span style="background-color: #4caf50; padding: 5px;">Clear transactions</span>
+          </div>
+        </div>
+        <button class="fab-button" @click="showNewModalMethod"><span class="plus-sign">+</span></button>
+        <div v-if="showNewModal" class="modal-container">
+          <div class="modal-content">
+            <h2 style="padding: 5px">Add Transaction</h2>
+            <label style="padding: 5px" for="transactionName">Transaction Name:</label>
+            <input style="padding: 5px" v-model="newTransactionName" id="transactionName" type="text" />
+            <label style="padding: 5px" for="transactionAmount">Transaction Amount:</label>
+            <input style="padding: 5px" v-model="newTransactionAmount" id="transactionAmount" type="number" />
+            <label style="padding: 5px" for="categoryID">Category:</label>
+            <select style="padding: 5px; margin-bottom: 10px" v-model="newCategoryID">
+              <option v-for="(category, index) in categories" :key="index" :value="category.categoryID">{{category.categoryName}}</option>
+            </select>
+            <div class="modal-buttons">
+              <button style="padding: 5px; margin: 5px;" @click="submitTransaction">Submit</button>
+              <button style="padding: 5px; margin: 5px;" @click="closeNewModalMethod">Close</button>
+            </div>
+          </div>
+        </div>
+        <div v-if="showEditModal" class="modal-container">
+          <div class="modal-content">
+            <h2 style="padding: 5px">Edit Transaction</h2>
+            <label style="padding: 5px" for="transactionName">Transaction Name:</label>
+            <input style="padding: 5px" v-model="editTransactionName" id="transactionName" type="text" />
+            <label style="padding: 5px" for="transactionAmount">Transaction Amount:</label>
+            <input style="padding: 5px" v-model="editTransactionAmount" id="transactionAmount" type="number" />
+            <label style="padding: 5px" for="categoryID">Category:</label>
+            <select style="padding: 5px; margin-bottom: 10px" v-model="editTransactionCategoryID">
+              <option v-for="(category, index) in categories" :key="index" :value="category.categoryID">{{category.categoryName}}</option>
+            </select>
+            <div class="modal-buttons">
+              <button style="padding: 5px; margin: 5px;" @click="editTransaction">Submit</button>
+              <button style="padding: 5px; margin: 5px;" @click="closeEditModalMethod">Close</button>
+            </div>
+          </div>
+        </div>
+        <div class="transactionHeader">
+          <p style="width: 550px">Name</p>
+          <p>Category</p>
+          <p>Amount</p>
+        </div>
+        <div v-if="noSearchTranCheck">
+          <div class="transactionItems" v-for="(transaction, index) in transactions" :key="index">
+            <p style="width: 500px">
+              <span class="editSaveIcons" @click="toggleEditTransaction(transaction.transactionID)"><i class="fa-solid fa-pencil"></i></span>
+              <span class="editSaveIcons" @click="deleteTransaction(transaction.transactionID)"><i class="fa-solid fa-trash"></i></span>
+              {{ transaction.transactionName }}
+            </p>
+            <p>{{ getCategoryName(transaction.categoryID) }}</p>
+            <p>{{ transaction.transactionAmount }}
+            </p>
+          </div>
+        </div>
+        <div v-if="searchTranCheck">
+          <div class="transactionItems" v-for="(transaction, index) in searchedTransactions" :key="index">
+            <p>
+              <span class="editSaveIcons" @click="toggleEditTransaction(transaction.transactionID)"><i class="fa-solid fa-pencil"></i></span>
+              <span class="editSaveIcons" @click="deleteTransaction(transaction.transactionID)"><i class="fa-solid fa-trash"></i></span>
+              {{ transaction.transactionName }}
+            </p>
+            <p>{{ getCategoryName(transaction.categoryID) }}</p>
+            <p>{{ transaction.transactionAmount }}
+            </p>
+          </div>
         </div>
       </div>
     </div>
-    <div v-if="showEditModal" class="modal-container">
-      <div class="modal-content">
-        <h2 style="padding: 5px">Edit Transaction</h2>
-        <label style="padding: 5px" for="transactionName">Transaction Name:</label>
-        <input style="padding: 5px" v-model="editTransactionName" id="transactionName" type="text" />
-        <label style="padding: 5px" for="transactionAmount">Transaction Amount:</label>
-        <input style="padding: 5px" v-model="editTransactionAmount" id="transactionAmount" type="number" />
-        <label style="padding: 5px" for="categoryID">Category:</label>
-        <select style="padding: 5px; margin-bottom: 10px" v-model="editTransactionCategoryID">
-          <option v-for="(category, index) in categories" :key="index" :value="category.categoryID">{{category.categoryName}}</option>
-        </select>
-        <div class="modal-buttons">
-        <button style="padding: 5px; margin: 5px;" @click="editTransaction">Submit</button>
-        <button style="padding: 5px; margin: 5px;" @click="closeEditModalMethod">Close</button>
-        </div>
-      </div>
-    </div>
-    <div class="transactionHeader">
-      <p style="width: 550px">Name</p>
-      <p>Category</p>
-      <p>Amount</p>
-    </div>
-    <div v-if="noSearchTranCheck">
-      <div class="transactionItems" v-for="(transaction, index) in transactions" :key="index">
-        <p style="width: 500px">
-          <span class="editSaveIcons" @click="toggleEditTransaction(transaction.transactionID)"><i class="fa-solid fa-pencil"></i></span>
-          <span class="editSaveIcons" @click="deleteTransaction(transaction.transactionID)"><i class="fa-solid fa-trash"></i></span>
-          {{ transaction.transactionName }}
-        </p>
-        <p>{{ getCategoryName(transaction.categoryID) }}</p>
-        <p>{{ transaction.transactionAmount }}
-        </p>
-      </div>
-    </div>
-    <div v-if="searchTranCheck">
-      <div class="transactionItems" v-for="(transaction, index) in searchedTransactions" :key="index">
-        <p>
-          <span class="editSaveIcons" @click="toggleEditTransaction(transaction.transactionID)"><i class="fa-solid fa-pencil"></i></span>
-          <span class="editSaveIcons" @click="deleteTransaction(transaction.transactionID)"><i class="fa-solid fa-trash"></i></span>
-          {{ transaction.transactionName }}
-        </p>
-        <p>{{ getCategoryName(transaction.categoryID) }}</p>
-        <p>{{ transaction.transactionAmount }}
-        </p>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script>
-import HeaderBar from "@/components/HeaderBar.vue";
 import {PDFDocument, rgb} from "pdf-lib";
+import SideMenu from "@/components/SideBar/SideMenu.vue";
+import {sidebarWidth} from "@/components/SideBar/SideMenuState";
+
 export default {
+  computed: {
+    sidebarWidth() {
+      return sidebarWidth
+    }
+  },
   data() {
     return {
       showEditModal: false,
@@ -110,7 +120,7 @@ export default {
     }
 },
   components: {
-    HeaderBar
+    SideMenu
   },
   methods: {
     showNewModalMethod() {
@@ -134,8 +144,7 @@ export default {
         if (!response.ok) {
           throw new Error(`Error fetching transaction: ${response.statusText}`);
         }
-        const data = await response.json();
-        this.transactionBeingEdited = data;
+        this.transactionBeingEdited = await response.json();
         this.editTransactionName = this.transactionBeingEdited.transactionName;
         this.editTransactionAmount = this.transactionBeingEdited.transactionAmount;
         this.editTransactionCategoryID = this.transactionBeingEdited.categoryID;
@@ -297,6 +306,7 @@ export default {
 }
 
 </script>
+
 <style scoped>
 .fab-button {
   position: fixed;
@@ -397,6 +407,16 @@ button:hover {
   border-radius: 5px;
   font-size: 15px;
   width: 300px;
+}
+.deleteAllTransactions {
+  text-decoration: underline;
+  font-size: 15px;
+  color: black;
+  margin-bottom: 10px;
+  margin-right: 10px;
+  &:hover {
+    cursor: pointer;
+  }
 }
 </style>
 

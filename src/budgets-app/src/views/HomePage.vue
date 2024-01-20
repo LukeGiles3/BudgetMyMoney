@@ -1,23 +1,33 @@
 <template>
-  <div style="display: flex; flex-direction: column; height: 100%; width: 150vh; flex: 1">
-    <HeaderBar/>
-    <div class="center">
-      <h1>
-        Welcome to BudgetMyMoney. Use the Budget tab to create categories of things you spend money on. Add transactions through the Transactions
-        Tab and assign them to the categories you created. View how much you spent over time by generating reports on the two different pages.
-      </h1>
+    <div>
+      <SideMenu />
+      <div :style="{ 'margin-left': sidebarWidth}">
+        <router-view />
+        <div class="center">
+          <h1>
+            Welcome to BudgetMyMoney. Use the Budget tab to create categories of things you spend money on. Add transactions through the Transactions
+            Tab and assign them to the categories you created. View how much you spent over time by generating reports on the two different pages.
+          </h1>
+        </div>
+      </div>
     </div>
-  </div>
 
 </template>
 <script>
-import HeaderBar from "@/components/HeaderBar.vue";
+import SideMenu from "@/components/SideBar/SideMenu.vue";
+import {sidebarWidth} from "@/components/SideBar/SideMenuState";
 export default {
+  computed: {
+    sidebarWidth() {
+      return sidebarWidth
+    }
+  },
   components: {
-    HeaderBar
+    SideMenu
   }
 }
 </script>
+
 <style scoped>
 h1 {
   text-align: center;
@@ -28,5 +38,6 @@ h1 {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  margin-left: 200px;
 }
 </style>
