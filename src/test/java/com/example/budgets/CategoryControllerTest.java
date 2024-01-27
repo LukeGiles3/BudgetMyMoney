@@ -1,5 +1,7 @@
 package com.example.budgets;
 
+import com.example.budgets.entity.Category;
+import com.example.budgets.repository.CategoryRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

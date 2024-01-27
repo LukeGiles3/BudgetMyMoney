@@ -1,5 +1,7 @@
 package com.example.budgets;
 
+import com.example.budgets.entity.Transaction;
+import com.example.budgets.repository.TransactionRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
